@@ -1,7 +1,7 @@
 resource "aws_subnet" "public-prod-subnet" {
   vpc_id     = aws_vpc.prod-vpc.id
   cidr_block = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = var.aws_used_availability_zone
   tags = {
     Name = "production"
     Type = "Public"
@@ -86,9 +86,9 @@ resource "aws_eip" "web-elastic-ip" {
 }
 
 resource "aws_instance" "web-server" {
-  ami = "ami-0bd91caaa9bc42cf3"
-  instance_type = "t2.micro"
-  availability_zone = "us-east-1a"
+  ami = var.aws_ami
+  instance_type = var.aws_instance_type
+  availability_zone = var.aws_used_availability_zone
   key_name = "terraform_tests_key"
 
   network_interface {

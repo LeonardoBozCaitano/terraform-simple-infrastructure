@@ -57,9 +57,9 @@ resource "aws_network_interface" "production-app-server-ni" {
 }
 
 resource "aws_instance" "app-server" {
-  ami = "ami-0bd91caaa9bc42cf3"
-  instance_type = "t2.micro"
-  availability_zone = "us-east-1a"
+  ami = var.aws_ami
+  instance_type = var.aws_instance_type
+  availability_zone = var.aws_used_availability_zone
   key_name = "terraform_tests_key"
 
   network_interface {
