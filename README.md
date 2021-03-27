@@ -21,7 +21,12 @@ Each subnet have the routing table configured and a instance deployed with secur
 
 ### To run terraform and create this infrastructure on your AWS is just run the commands below:
 
-This command will check the terraform template and show you everything that terraform will create when you apply the template.
+First of all you need to init terraform using the command below, this will download the requirements to comunicate with the providers, in this case, AWS.
+```
+terraform init
+```
+
+This command will check the terraform template and show you everything that will be created when you apply the template.
 ```
 terraform plan -var="aws_access_key=YourAccessKey" -var="aws_secret_access_key=YourSecretAccessKey"
 ```
@@ -31,7 +36,7 @@ This command will create the infrastructure on your AWS.
 terraform apply -var="aws_access_key=YourAccessKey" -var="aws_secret_access_key=YourSecretAccessKey"
 ```
 
-If you want just to test the template and see in the console everything that this template creates, you can destroy everythin simply running this command.
+If you want just to test the template and see in the AWS Console everything that this template creates, later you can destroy everything simply running this command.
 ```
 terraform destroy
 ```
