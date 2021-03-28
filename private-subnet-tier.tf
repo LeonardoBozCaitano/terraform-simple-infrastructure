@@ -1,15 +1,15 @@
-resource "aws_subnet" "private-prod-subnet" {
-  vpc_id     = aws_vpc.prod-vpc.id
+resource "aws_subnet" "private1" {
+  vpc_id     = aws_vpc.dev.id
   cidr_block = "10.0.2.0/24"
-  availability_zone = "us-east-1a"
+  availability_zone = "us_east_1a"
   tags = {
     Name = "production"
     Type = "private"
   }
 }
 
-resource "aws_route_table" "prod-private-route-table" {
-  vpc_id = aws_vpc.prod-vpc.id
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.dev.id
 
   route {
     cidr_block = "10.0.1.0/24"
@@ -20,15 +20,15 @@ resource "aws_route_table" "prod-private-route-table" {
   }
 }
 
-resource "aws_route_table_association" "private-prod-subnet-association" {
-  subnet_id      = aws_subnet.private-prod-subnet.id
-  route_table_id = aws_route_table.prod-private-route-table.id
+resource "aws_route_table_association" "private1" {
+  subnet_id      = aws_subnet.private1.id
+  route_table_id = aws_route_table.private.id
 }
 
-resource "aws_security_group" "allow-app-tear-traffic" {
+resource "aws_security_group" "private" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.prod-vpc.id
+  vpc_id      = aws_vpc.dev.id
 
   ingress {
     description = "HTTPS"
@@ -46,17 +46,22 @@ resource "aws_security_group" "allow-app-tear-traffic" {
   }
 
   tags = {
-    Name = "production-allow-app-tier"
+    Name = "production_allow_app_tier"
   }
 }
 
-resource "aws_network_interface" "production-app-server-ni" {
-  subnet_id       = aws_subnet.private-prod-subnet.id
-  private_ips     = ["10.0.2.50"]
-  security_groups = [aws_security_group.allow-app-tear-traffic.id]
+resource "aws_nat_gateway" "gw" {
+  allocation_id = aws_eip.this.id
+  subnet_id     = aws_subnet.private1.id
 }
 
-resource "aws_instance" "app-server" {
+resource "aws_network_interface" "private1" {
+  subnet_id       = aws_subnet.private1.id
+  private_ips     = ["10.0.2.50"]
+  security_groups = [aws_security_group.private.id]
+}
+
+resource "aws_instance" "app_server" {
   ami = var.aws_ami
   instance_type = var.aws_instance_type
   availability_zone = var.aws_used_availability_zone
@@ -64,7 +69,7 @@ resource "aws_instance" "app-server" {
 
   network_interface {
     device_index = 0
-    network_interface_id = aws_network_interface.production-app-server-ni.id
+    network_interface_id = aws_network_interface.private1.id
   }
 
   user_data = <<-EOF
@@ -75,6 +80,6 @@ resource "aws_instance" "app-server" {
               sudo bash -c 'echo this is your private server! > /var/www/html/index.html'
               EOF
   tags = {
-    Name = "private-app-server"
+    Name = "private_app_server"
   }
 }

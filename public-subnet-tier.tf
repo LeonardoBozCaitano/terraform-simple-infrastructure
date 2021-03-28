@@ -1,5 +1,5 @@
-resource "aws_subnet" "public-prod-subnet" {
-  vpc_id     = aws_vpc.prod-vpc.id
+resource "aws_subnet" "public1" {
+  vpc_id     = aws_vpc.dev.id
   cidr_block = "10.0.1.0/24"
   availability_zone = var.aws_used_availability_zone
   tags = {
@@ -8,17 +8,17 @@ resource "aws_subnet" "public-prod-subnet" {
   }
 }
 
-resource "aws_route_table" "prod-vpc-route-table" {
-  vpc_id = aws_vpc.prod-vpc.id
+resource "aws_route_table" "public" {
+  vpc_id = aws_vpc.dev.id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.prod-internet-gateway.id
+    gateway_id = aws_internet_gateway.dev.id
   }
 
   route {
     ipv6_cidr_block        = "::/0"
-    gateway_id = aws_internet_gateway.prod-internet-gateway.id
+    gateway_id = aws_internet_gateway.dev.id
   }
 
   tags = {
@@ -26,15 +26,15 @@ resource "aws_route_table" "prod-vpc-route-table" {
   }
 }
 
-resource "aws_route_table_association" "public-prod-subet-association" {
-  subnet_id      = aws_subnet.public-prod-subnet.id
-  route_table_id = aws_route_table.prod-vpc-route-table.id
+resource "aws_route_table_association" "public1" {
+  subnet_id      = aws_subnet.public1.id
+  route_table_id = aws_route_table.public.id
 }
 
-resource "aws_security_group" "allow-production-web-traffic" {
+resource "aws_security_group" "public" {
   name        = "allow_tls"
   description = "Allow TLS inbound traffic"
-  vpc_id      = aws_vpc.prod-vpc.id
+  vpc_id      = aws_vpc.dev.id
 
   ingress {
     description = "HTTPS"
@@ -68,24 +68,24 @@ resource "aws_security_group" "allow-production-web-traffic" {
   }
 
   tags = {
-    Name = "production-allow-web"
+    Name = "production_allow_web"
   }
 }
 
-resource "aws_network_interface" "production-web-server-ni" {
-  subnet_id       = aws_subnet.public-prod-subnet.id
+resource "aws_network_interface" "public1" {
+  subnet_id       = aws_subnet.public1.id
   private_ips     = ["10.0.1.50"]
-  security_groups = [aws_security_group.allow-production-web-traffic.id]
+  security_groups = [aws_security_group.public.id]
 }
 
-resource "aws_eip" "web-elastic-ip" {
+resource "aws_eip" "this" {
   vpc                       = true
-  network_interface         = aws_network_interface.production-web-server-ni.id
+  network_interface         = aws_network_interface.public1.id
   associate_with_private_ip = "10.0.1.50"
-  depends_on = [aws_internet_gateway.prod-internet-gateway]
+  depends_on = [aws_internet_gateway.dev]
 }
 
-resource "aws_instance" "web-server" {
+resource "aws_instance" "web_server" {
   ami = var.aws_ami
   instance_type = var.aws_instance_type
   availability_zone = var.aws_used_availability_zone
@@ -93,7 +93,7 @@ resource "aws_instance" "web-server" {
 
   network_interface {
     device_index = 0
-    network_interface_id = aws_network_interface.production-web-server-ni.id
+    network_interface_id = aws_network_interface.public1.id
   }
 
   user_data = <<-EOF
@@ -104,6 +104,6 @@ resource "aws_instance" "web-server" {
               sudo bash -c 'echo this is your public server! > /var/www/html/index.html'
               EOF
   tags = {
-    Name = "public-web-server"
+    Name = "public_web_server"
   }
 }
