@@ -1,6 +1,6 @@
 # Simple Application Infrastructure
 
-Terraform is a perfect way to create and manage your products infrastructure. It have a declarative way to create templates, so you just have to declare how you want your application to be, and terraform will find out the steps that needs to be done to the infrastructure be exacly how you want to.
+Terraform is a perfect language to create and manage products infrastructure. It have a declarative way to create templates, so you just have to describe how you want your application to be, and terraform will find out the steps that needs to be done to the infrastructure be exacly how you want to.
 
 This template will create a simple infrastructure to an application.
 
@@ -8,7 +8,7 @@ This template will create a simple infrastructure to an application.
 
 First of all, it will create a virtual private cloud (VPC) to provision an isolated, fully manageble cloud enviroment.
 
-This VPC will be conected to a Internet Gateway, that allow the VPC to recieve requests from all the internet.
+This VPC will be conected to a Internet Gateway, that allow the VPC to recieve requests from the internet.
 
 The created VPC is divided in two subnets:
 
