@@ -1,7 +1,7 @@
 resource "aws_subnet" "private1" {
   vpc_id     = aws_vpc.dev.id
   cidr_block = "10.0.2.0/24"
-  availability_zone = "us_east_1a"
+  availability_zone = "us-east-1a"
   tags = {
     Name = "production"
     Type = "private"
@@ -12,7 +12,8 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.dev.id
 
   route {
-    cidr_block = "10.0.1.0/24"
+    cidr_block = "10.0.1.0/64"
+    network_interface_id = aws_network_interface.public1.id
   }
 
   tags = {
@@ -26,8 +27,8 @@ resource "aws_route_table_association" "private1" {
 }
 
 resource "aws_security_group" "private" {
-  name        = "allow_tls"
-  description = "Allow TLS inbound traffic"
+  name        = "allow_public_subnet"
+  description = "Allow inbound traffic from the other subnet"
   vpc_id      = aws_vpc.dev.id
 
   ingress {

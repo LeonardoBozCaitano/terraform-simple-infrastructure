@@ -12,7 +12,7 @@ variable "aws_used_availability_zone" {
 
 variable "aws_ami" {
     description = "EC2 images"
-    default = "ami-0bd91caaa9bc42cf3"
+    default = "ami-042e8287309f5df03"
 }
 
 variable "aws_instance_type" {
