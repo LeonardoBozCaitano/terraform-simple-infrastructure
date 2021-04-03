@@ -12,8 +12,8 @@ This VPC will be conected to a Internet Gateway, that allow the VPC to recieve r
 
 The created VPC is divided in two subnets:
 
-- The public subnet, that can be access by the whole internet. It could be used to host frontend's aplications. 
-- The private subnet, that only recieve requests of the applications hosted on our public subnet, increasing the security of our application. It could host our backend and database aplications using a cluster kubernetes.
+- The public subnet can be access by the whole internet. It could be used to host frontend's aplications. 
+- The private subnet only recieve requests of the applications hosted on our public subnet, increasing the security of our application. It could host our backend and database aplications using a cluster kubernetes.
 
 Each subnet have the routing table configured and a instance deployed with security groups already defined.
 

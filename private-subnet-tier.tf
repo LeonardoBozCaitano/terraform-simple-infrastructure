@@ -12,8 +12,7 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.dev.id
 
   route {
-    cidr_block = "10.0.1.0/64"
-    network_interface_id = aws_network_interface.public1.id
+    nat_gateway_id = aws_nat_gateway.gw.id
   }
 
   tags = {
@@ -51,9 +50,22 @@ resource "aws_security_group" "private" {
   }
 }
 
+resource "aws_eip" "nat" {
+  depends_on = [
+    aws_internet_gateway.dev
+  ]
+  vpc   = true
+}
+
 resource "aws_nat_gateway" "gw" {
-  allocation_id = aws_eip.this.id
+  depends_on = [
+    aws_eip.nat
+  ]
+  allocation_id = aws_eip.nat.id
   subnet_id     = aws_subnet.private1.id
+  tags = {
+    Name = "dev"
+  }
 }
 
 resource "aws_network_interface" "private1" {

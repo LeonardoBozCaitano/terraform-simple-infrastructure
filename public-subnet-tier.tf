@@ -78,7 +78,7 @@ resource "aws_network_interface" "public1" {
   security_groups = [aws_security_group.public.id]
 }
 
-resource "aws_eip" "this" {
+resource "aws_eip" "web" {
   vpc                       = true
   network_interface         = aws_network_interface.public1.id
   associate_with_private_ip = "10.0.1.50"
